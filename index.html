@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Healthcare Voice Assistant</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 520px;
+        margin: 40px auto;
+        text-align: center;
+        background: #f7f9fc;
+      }
+
+      h2 {
+        color: #333;
+      }
+
+      button {
+        padding: 14px 22px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 6px;
+        background: #4f46e5;
+        color: white;
+      }
+
+      button:disabled {
+        background: #999;
+        cursor: not-allowed;
+      }
+
+      #status {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      #bot {
+        margin-top: 20px;
+        font-size: 18px;
+        min-height: 50px;
+        color: #111;
+      }
+
+      #transcript {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #444;
+        font-style: italic;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>🩺 Healthcare Voice Assistant</h2>
+
+    <button id="btn">🎤 Start Recording</button>
+
+    <div id="status"></div>
+    <div id="transcript"></div>
+    <div id="bot"></div>
+
+    <script>
+      let recorder;
+      let chunks = [];
+      let recording = false;
+
+      const btn = document.getElementById("btn");
+      const botDiv = document.getElementById("bot");
+      const statusDiv = document.getElementById("status");
+      const transcriptDiv = document.getElementById("transcript");
+
+      // ---------- Audio element for ElevenLabs TTS ----------
+      const audioPlayer = new Audio();
+
+      // ---------- Button handler ----------
+      btn.onclick = async () => {
+        if (!recording) {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
+            });
+
+            recorder = new MediaRecorder(stream);
+            chunks = [];
+
+            recorder.ondataavailable = (e) => chunks.push(e.data);
+
+            recorder.onstop = async () => {
+              const blob = new Blob(chunks, { type: "audio/webm" });
+              await sendToServer(blob);
+            };
+
+            recorder.start();
+            recording = true;
+            btn.textContent = "⏹ Stop Recording";
+            statusDiv.innerText = "🎙 Recording… please speak clearly";
+            transcriptDiv.innerText = "";
+            botDiv.innerText = "";
+          } catch (err) {
+            alert("Microphone access denied.");
+          }
+        } else {
+          recorder.stop();
+          recording = false;
+          btn.textContent = "🎤 Start Recording";
+          statusDiv.innerText = "⏳ Processing audio…";
+        }
+      };
+
+      // ---------- Send audio to backend ----------
+      async function sendToServer(blob) {
+        try {
+          const form = new FormData();
+          form.append("audio", blob, "voice.webm");
+
+          const res = await fetch("http://127.0.0.1:8000/voice", {
+            method: "POST",
+            body: form,
+          });
+
+          if (!res.ok) {
+            throw new Error(`Server error: ${res.status}`);
+          }
+
+          // Get JSON response with text and base64 audio
+          const data = await res.json();
+          const replyText = data.text || "Response received";
+          const audioBase64 = data.audio;
+
+          botDiv.innerText = "🤖 " + replyText;
+          statusDiv.innerText = "✅ Response received";
+
+          // Convert base64 to blob and play
+          const audioBlob = base64ToBlob(audioBase64, "audio/mpeg");
+          const audioUrl = URL.createObjectURL(audioBlob);
+          playElevenLabsAudio(audioUrl);
+        } catch (err) {
+          console.error(err);
+          statusDiv.innerText = "❌ Failed to contact server";
+        }
+      }
+
+      // ---------- Convert base64 to Blob ----------
+      function base64ToBlob(base64, mimeType) {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: mimeType });
+      }
+
+      // ---------- Play ElevenLabs Audio ----------
+      function playElevenLabsAudio(audioUrl) {
+        if (!audioUrl) return;
+
+        // Stop any currently playing audio
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+
+        // Set new audio source
+        audioPlayer.src = audioUrl;
+
+        statusDiv.innerText = "🔊 Speaking…";
+
+        audioPlayer.onended = () => {
+          statusDiv.innerText = "🟢 Ready";
+          URL.revokeObjectURL(audioUrl); // Clean up blob URL
+        };
+
+        audioPlayer.onerror = (e) => {
+          console.error("Audio playback error:", e);
+          statusDiv.innerText = "❌ Audio playback failed";
+          URL.revokeObjectURL(audioUrl);
+        };
+
+        audioPlayer.play().catch((err) => {
+          console.error("Error playing audio:", err);
+          statusDiv.innerText = "❌ Audio playback failed";
+        });
+      }
+    </script>
+  </body>
+</html>
