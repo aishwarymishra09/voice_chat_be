@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceBot Pro — Human-Like AI Receptionist</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1e3a8a;
+      --primary-dark: #0f172a;
+      --secondary: #0ea5a4;
+      --accent: #64748b;
+      --text-dark: #0f172a;
+      --text-light: #475569;
+      --bg-light: #f8fafc;
+      --bg-white: #ffffff;
+      --border: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-dark);
+      line-height: 1.6;
+      background: var(--bg-white);
+    }
+
+    /* Navigation */
+    nav {
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .logo span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-left: 0.25rem;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .cta-button {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .cta-button:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: white;
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .hero p {
+      margin: 1.5rem auto 2.5rem;
+      font-size: 1.2rem;
+      max-width: 750px;
+      opacity: 0.95;
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn-secondary {
+      border: 2px solid white;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Sections */
+    section {
+      padding: 5rem 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-light);
+      max-width: 650px;
+      margin: 1rem auto 3rem;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Industry */
+    .industry-section {
+      background: var(--bg-light);
+    }
+
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .industry-card {
+      background: var(--bg-white);
+      padding: 2.5rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .industry-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .industry-card ul {
+      list-style: none;
+      margin-top: 1.2rem;
+    }
+
+    .industry-card li {
+      padding-left: 1.5rem;
+      position: relative;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+
+    .industry-card li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--secondary);
+      font-weight: bold;
+    }
+
+    /* Stats */
+    .stats-section {
+      background: var(--primary);
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      text-align: center;
+      gap: 2rem;
+    }
+
+    .stat-item h3 {
+      font-size: 2.8rem;
+      font-weight: 800;
+    }
+
+    /* Demo */
+    .demo-section {
+      background: linear-gradient(135deg, #e2e8f0, #f8fafc);
+      text-align: center;
+    }
+
+    .demo-container {
+      background: white;
+      max-width: 600px;
+      margin: auto;
+      padding: 3rem;
+      border-radius: 18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+    }
+
+    .record-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1.2rem 2.4rem;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .record-button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .record-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .record-button.recording {
+      background: #dc2626;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    #status {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      color: var(--text-light);
+      min-height: 24px;
+    }
+
+    #transcript {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      font-style: italic;
+      color: var(--text-light);
+      min-height: 40px;
+    }
+
+    #bot {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #1e3a8a, #0f172a);
+      color: white;
+      border-radius: 12px;
+      font-size: 1.125rem;
+      line-height: 1.6;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .demo-info {
+      background: var(--bg-light);
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .demo-info h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .demo-info p {
+      margin: 0.5rem 0;
+      color: var(--text-light);
+    }
+
+    .demo-info strong {
+      color: var(--text-dark);
+    }
+
+    .demo-info ul {
+      list-style: none;
+      margin: 0.5rem 0;
+      padding-left: 0;
+    }
+
+    .demo-info li {
+      padding: 0.25rem 0;
+      color: var(--text-light);
+    }
+
+    /* Contact Form */
+    .contact-form-container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: var(--bg-light);
+      padding: 3rem;
+      border-radius: 12px;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .contact-form input,
+    .contact-form select,
+    .contact-form textarea {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .contact-form button {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.125rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary-dark);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.3rem;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <div class="nav-container">
+    <div class="logo">🎙 VoiceBot Pro <span>AI Receptionist</span></div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#industries">Industries</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="cta-button">Request Demo</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Human-Like AI Receptionists for High-Intent Business Calls</h1>
+  <p>
+    VoiceBot Pro answers every call, speaks naturally, qualifies leads, and books appointments — helping healthcare and real estate businesses in India never miss a customer.
+  </p>
+  <div class="hero-buttons">
+    <a href="#demo" class="btn-primary">Try Live Demo</a>
+    <a href="#contact" class="btn-secondary">Talk to Sales</a>
+  </div>
+  <p style="margin-top:1.5rem; font-size:0.95rem; opacity:0.85;">
+    No credit card • Quick setup • Built for Indian businesses
+  </p>
+</section>
+
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">Why Businesses Trust VoiceBot Pro</h2>
+    <p class="section-subtitle">
+      Designed to sound human, work reliably, and integrate smoothly into real business workflows.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Human-Like Conversations</h3>
+        <p>Understands intent, context, and follow-up questions so callers feel heard — not automated.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3>Always Available</h3>
+        <p>Answers every call instantly — during peak hours, after hours, and on holidays.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🏥</div>
+        <h3>Industry-Focused</h3>
+        <p>Built specifically for healthcare clinics and real estate businesses — not generic scripts.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Security-First Design</h3>
+        <p>Built with strong data security practices and privacy-first architecture.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="industries" class="industry-section">
+  <div class="container">
+    <h2 class="section-title">Designed for Real Conversations</h2>
+    <p class="section-subtitle">
+      Two industries. Two tailored AI receptionist experiences.
+    </p>
+
+    <div class="industry-grid">
+      <div class="industry-card">
+        <h3>🏥 Healthcare & Medical</h3>
+        <p>Reduce front-desk workload and improve patient experience with calm, accurate call handling.</p>
+        <ul>
+          <li>Appointment booking & rescheduling</li>
+          <li>Doctor availability & clinic info</li>
+          <li>Patient inquiry handling</li>
+          <li>Call summaries for staff</li>
+        </ul>
+      </div>
+
+      <div class="industry-card">
+        <h3>🏠 Real Estate</h3>
+        <p>Capture and qualify every property inquiry before it goes cold.</p>
+        <ul>
+          <li>Property inquiries & pricing basics</li>
+          <li>Lead qualification</li>
+          <li>Site visit scheduling</li>
+          <li>Instant lead handover</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="container stats-grid">
+    <div class="stat-item"><h3>24/7</h3><p>Call Handling</p></div>
+    <div class="stat-item"><h3>Human-Like</h3><p>Voice Experience</p></div>
+    <div class="stat-item"><h3>Real-Time</h3><p>Lead Capture</p></div>
+    <div class="stat-item"><h3>Scalable</h3><p>For Growing Teams</p></div>
+  </div>
+</section>
+
+<section id="demo" class="demo-section">
+  <div class="container">
+    <h2 class="section-title">Try the Live Demo</h2>
+    <p class="section-subtitle">
+      Speak naturally, just like you would with a receptionist. Our AI responds in real time.
+    </p>
+
+    <div class="demo-info">
+      <h3>Demo Clinic (Sample Data)</h3>
+      <p><strong>Clinic Name:</strong> SmileCare Dental Studio</p>
+      <p><strong>Doctors Available:</strong></p>
+      <ul>
+        <li>Dr. Ananya Sharma – General Dentist</li>
+        <li>Dr. Rahul Mehta – Orthodontist</li>
+      </ul>
+      <p><strong>Timings:</strong> 9 AM – 8 PM (Mon–Sat)</p>
+    </div>
+
+    <div class="demo-container">
+      <button id="btn" class="record-button">🎤 Start Conversation</button>
+      <div id="status"></div>
+      <div id="transcript"></div>
+      <div id="bot"></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <h2 class="section-title">Let's See If VoiceBot Pro Fits Your Business</h2>
+    <p class="section-subtitle">
+      Share your details and we'll walk you through a tailored demo.
+    </p>
+
+    <div class="contact-form-container">
+      <form id="contact-form" class="contact-form">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <input type="text" placeholder="Company Name">
+        <select required>
+          <option value="">Select Industry</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="real-estate">Real Estate</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea placeholder="Tell us about your needs" rows="4"></textarea>
+        <button type="submit" class="cta-button">Request Demo</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 VoiceBot Pro • Human-Like AI Receptionists for Indian Businesses</p>
+</footer>
+
+<script>
+  let recorder;
+  let chunks = [];
+  let recording = false;
+
+  const btn = document.getElementById("btn");
+  const botDiv = document.getElementById("bot");
+  const statusDiv = document.getElementById("status");
+  const transcriptDiv = document.getElementById("transcript");
+
+  const audioPlayer = new Audio();
+
+  // Smooth scroll for navigation links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Button handler
+  btn.onclick = async () => {
+    if (!recording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recorder = new MediaRecorder(stream);
+        chunks = [];
+
+        recorder.ondataavailable = (e) => chunks.push(e.data);
+
+        recorder.onstop = async () => {
+          const blob = new Blob(chunks, { type: "audio/webm" });
+          await sendToServer(blob);
+        };
+
+        recorder.start();
+        recording = true;
+        btn.textContent = "⏹ Stop Recording";
+        btn.classList.add("recording");
+        statusDiv.innerText = "🎙 Recording… please speak clearly";
+        transcriptDiv.innerText = "";
+        botDiv.innerText = "";
+      } catch (err) {
+        alert("Microphone access denied. Please allow microphone access to use this feature.");
+      }
+    } else {
+      recorder.stop();
+      recording = false;
+      btn.textContent = "🎤 Start Conversation";
+      btn.classList.remove("recording");
+      statusDiv.innerText = "⏳ Processing audio…";
+    }
+  };
+
+  async function sendToServer(blob) {
+    try {
+      const form = new FormData();
+      form.append("audio", blob, "voice.webm");
+
+      const res = await fetch("http://127.0.0.1:8000/voice", {
+        method: "POST",
+        body: form,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const replyText = data.text || "Response received";
+      const audioBase64 = data.audio;
+
+      transcriptDiv.innerText = "You said: " + (transcriptDiv.innerText || "Processing...");
+      botDiv.innerHTML = "🤖 " + replyText;
+      statusDiv.innerText = "✅ Response received";
+
+      const audioBlob = base64ToBlob(audioBase64, "audio/mpeg");
+      const audioUrl = URL.createObjectURL(audioBlob);
+      playElevenLabsAudio(audioUrl);
+    } catch (err) {
+      console.error(err);
+      statusDiv.innerText = "❌ Failed to contact server. Make sure the backend is running.";
+      botDiv.innerText = "Error: Could not connect to voice assistant service.";
+    }
+  }
+
+  function base64ToBlob(base64, mimeType) {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+  }
+
+  function playElevenLabsAudio(audioUrl) {
+    if (!audioUrl) return;
+
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+    audioPlayer.src = audioUrl;
+
+    statusDiv.innerText = "🔊 Speaking…";
+
+    audioPlayer.onended = () => {
+      statusDiv.innerText = "🟢 Ready";
+      URL.revokeObjectURL(audioUrl);
+    };
+
+    audioPlayer.onerror = (e) => {
+      console.error("Audio playback error:", e);
+      statusDiv.innerText = "❌ Audio playback failed";
+      URL.revokeObjectURL(audioUrl);
+    };
+
+    audioPlayer.play().catch((err) => {
+      console.error("Error playing audio:", err);
+      statusDiv.innerText = "❌ Audio playback failed";
+    });
+  }
+
+  // Contact form handler
+  document.getElementById("contact-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    alert("Thank you for your interest! We'll contact you soon.");
+    e.target.reset();
+  });
+</script>
+
+</body>
+</html>

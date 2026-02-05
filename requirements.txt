@@ -1,7 +1,12 @@
 fastapi
 uvicorn
 faster-whisper
-google-generativeai
 requests
 python-multipart
 dotenv
+groq
+redis
+websockets
+numpy
+librosa
+webrtcvad
